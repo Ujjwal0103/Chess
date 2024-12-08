@@ -8,25 +8,28 @@ public class Board {
     public static final int SQUARE_SIZE = 100;
     public static final int HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
 
-    public void draw(Graphics2D g2){
-        int c = 0;
-        for(int row = 0; row < MAX_ROW; row++){
-            for(int col = 0; col < MAX_COL; col++){
-                if(c == 0) {
-                    g2.setColor(new Color(210,165,125));
-                    c = 1;
-                }
-                else{
-                    g2.setColor(new Color(175,115,70));
-                    c = 0;
-                }
+    private final Color[][] boardColors = new Color[MAX_ROW][MAX_COL];
 
-                g2.fillRect(col*SQUARE_SIZE, row*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+    public Board() {
+        boolean isLight = true;
+        for (int row = 0; row < MAX_ROW; row++) {
+            for (int col = 0; col < MAX_COL; col++) {
+                if (isLight) {
+                    boardColors[row][col] = new Color(236, 240, 206);
+                } else {
+                    boardColors[row][col] = new Color(119, 149, 86);
+                }
+                isLight = !isLight;
             }
-            if(c == 0){
-                c = 1;
-            }else{
-                c = 0;
+            isLight = !isLight;
+        }
+    }
+
+    public void draw(Graphics2D g2) {
+        for (int row = 0; row < MAX_ROW; row++) {
+            for (int col = 0; col < MAX_COL; col++) {
+                g2.setColor(boardColors[row][col]);
+                g2.fillRect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
             }
         }
     }
