@@ -1,33 +1,27 @@
 package org.cis1200.chess;
 
-import java.util.LinkedList;
-import java.util.List;
+public class Rook extends Piece{
 
-public class Rook extends Piece {
-
-    public Rook(int color, Square initSq, String img_file) {
-        super(color, initSq, img_file);
+    public Rook(int color, int col, int row) {
+        super(color, col, row);
+        type = Type.ROOK;
+        if(color == ChessGamePanel.PLAYER_WHITE){
+            image = getImage("/piece/white-rook");
+        }else{
+            image = getImage("/piece/black-rook");
+        }
     }
-
-    @Override
-    public List<Square> getLegalMoves(Board b) {
-        LinkedList<Square> legalMoves = new LinkedList<Square>();
-        Square[][] board = b.getSquareArray();
-
-        int x = this.getPosition().getXNum();
-        int y = this.getPosition().getYNum();
-
-        int[] occups = getLinearOccupations(board, x, y);
-
-        for (int i = occups[0]; i <= occups[1]; i++) {
-            if (i != y) legalMoves.add(board[i][x]);
+    public boolean movePossible(int targetCol, int targetRow) {
+        if (!isWithinBoard(targetCol, targetRow) || isSameSquare(targetCol, targetRow)) {
+            return false;
+        }
+        boolean isStraightLineMove = (targetCol == preCol || targetRow == preRow);
+        if (isStraightLineMove) {
+            boolean isPathClear = !onStraightLine(targetCol, targetRow);
+            boolean isSquareValid = isValidPlace(targetCol, targetRow);
+            return isSquareValid && isPathClear;
         }
 
-        for (int i = occups[2]; i <= occups[3]; i++) {
-            if (i != x) legalMoves.add(board[y][i]);
-        }
-
-        return legalMoves;
+        return false;
     }
-
 }

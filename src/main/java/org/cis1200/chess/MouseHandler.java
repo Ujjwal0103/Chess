@@ -1,9 +1,9 @@
-package org.cis1200.chesss;
+package org.cis1200.chess;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class Mouse extends MouseAdapter {
+public class MouseHandler extends MouseAdapter {
 
     public int x, y;
     public boolean pressed;

@@ -1,4 +1,4 @@
-package org.cis1200.chesss;
+package org.cis1200.chess;
 
 import javax.swing.*;
 
@@ -8,12 +8,12 @@ public class RunChess implements Runnable {
         JFrame frame = new JFrame("Chess");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        GamePanel gp = new GamePanel();
+        ChessGamePanel gp = new ChessGamePanel();
         frame.add(gp);
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-        gp.launchGame();
+        gp.startGame();
     }
 }

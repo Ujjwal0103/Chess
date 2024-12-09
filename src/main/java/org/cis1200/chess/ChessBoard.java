@@ -1,8 +1,8 @@
-package org.cis1200.chesss;
+package org.cis1200.chess;
 
 import java.awt.*;
 
-public class Board {
+public class ChessBoard {
     final int MAX_COL = 8;
     final int MAX_ROW = 8;
     public static final int SQUARE_SIZE = 100;
@@ -10,7 +10,7 @@ public class Board {
 
     private final Color[][] boardColors = new Color[MAX_ROW][MAX_COL];
 
-    public Board() {
+    public ChessBoard() {
         boolean isLight = true;
         for (int row = 0; row < MAX_ROW; row++) {
             for (int col = 0; col < MAX_COL; col++) {

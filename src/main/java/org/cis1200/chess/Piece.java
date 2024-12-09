@@ -1,188 +1,157 @@
 package org.cis1200.chess;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-public abstract class Piece {
-    private final int color;
-    private Square currentSquare;
-    private BufferedImage img;
+public class Piece {
+    public Type type;
+    public BufferedImage image;
+    public int x,y;
+    public int col, row, preCol, preRow;
+    public int color;
+    public Piece hittingPiece;
+    public boolean moved, twoStepped;
 
-    public Piece(int color, Square initSq, String img_file) {
+
+    public Piece(int color, int col, int row){
         this.color = color;
-        this.currentSquare = initSq;
+        this.col = col;
+        this.row = row;
+        x = getX(col);
+        y = getY(row);
+        preCol = col;
+        preRow = row;
 
-        try {
-            if (this.img == null) {
-                this.img = ImageIO.read(new File(img_file));
-            }
-        } catch (IOException e) {
-            System.out.println("File not found: " + e.getMessage());
+    }
+
+    public BufferedImage getImage(String imagePath) {
+        BufferedImage image = null;
+        try{
+            image = ImageIO.read(getClass().getResourceAsStream(imagePath +
+                    ".png"));
+        }catch (IOException e){
+            e.printStackTrace();
         }
+        return image;
+
     }
 
-    public boolean move(Square fin) {
-        Piece occup = fin.getOccupyingPiece();
-
-        if (occup != null) {
-            if (occup.getColor() == this.color) return false;
-            else fin.capture(this);
-        }
-
-        currentSquare.removePiece();
-        this.currentSquare = fin;
-        currentSquare.put(this);
-        return true;
+    public int getX(int col){
+        return col * ChessBoard.SQUARE_SIZE;
     }
-
-    public Square getPosition() {
-        return currentSquare;
+    public int getY(int row){
+        return row * ChessBoard.SQUARE_SIZE;
     }
-
-    public void setPosition(Square sq) {
-        this.currentSquare = sq;
+    public int getColumn(int x){
+        return (x + ChessBoard.HALF_SQUARE_SIZE)/ ChessBoard.SQUARE_SIZE;
     }
-
-    public int getColor() {
-        return color;
+    public int getRow(int y){
+        return (y + ChessBoard.HALF_SQUARE_SIZE)/ ChessBoard.SQUARE_SIZE;
     }
-
-    public Image getImage() {
-        return img;
-    }
-
-    public void draw(Graphics g) {
-        int x = currentSquare.getX();
-        int y = currentSquare.getY();
-
-        g.drawImage(this.img, x, y, null);
-    }
-
-    public int[] getLinearOccupations(Square[][] board, int x, int y) {
-        int lastYabove = 0;
-        int lastXright = 7;
-        int lastYbelow = 7;
-        int lastXleft = 0;
-
-        for (int i = 0; i < y; i++) {
-            if (board[i][x].isOccupied()) {
-                if (board[i][x].getOccupyingPiece().getColor() != this.color) {
-                    lastYabove = i;
-                } else lastYabove = i + 1;
+    public int getIndex()
+    {
+        for(int index = 0; index < ChessGamePanel.temporaryPieces.size(); index++){
+            if(ChessGamePanel.temporaryPieces.get(index) == this){
+                return index;
             }
         }
-
-        for (int i = 7; i > y; i--) {
-            if (board[i][x].isOccupied()) {
-                if (board[i][x].getOccupyingPiece().getColor() != this.color) {
-                    lastYbelow = i;
-                } else lastYbelow = i - 1;
-            }
-        }
-
-        for (int i = 0; i < x; i++) {
-            if (board[y][i].isOccupied()) {
-                if (board[y][i].getOccupyingPiece().getColor() != this.color) {
-                    lastXleft = i;
-                } else lastXleft = i + 1;
-            }
-        }
-
-        for (int i = 7; i > x; i--) {
-            if (board[y][i].isOccupied()) {
-                if (board[y][i].getOccupyingPiece().getColor() != this.color) {
-                    lastXright = i;
-                } else lastXright = i - 1;
-            }
-        }
-
-        int[] occups = {lastYabove, lastYbelow, lastXleft, lastXright};
-
-        return occups;
+        return 0;
     }
-
-    public List<Square> getDiagonalOccupations(Square[][] board, int x, int y) {
-        LinkedList<Square> diagOccup = new LinkedList<Square>();
-
-        int xNW = x - 1;
-        int xSW = x - 1;
-        int xNE = x + 1;
-        int xSE = x + 1;
-        int yNW = y - 1;
-        int ySW = y + 1;
-        int yNE = y - 1;
-        int ySE = y + 1;
-
-        while (xNW >= 0 && yNW >= 0) {
-            if (board[yNW][xNW].isOccupied()) {
-                if (board[yNW][xNW].getOccupyingPiece().getColor() == this.color) {
-                    break;
-                } else {
-                    diagOccup.add(board[yNW][xNW]);
-                    break;
+    public void updatePosition(){
+        if(type == Type.PAWN){ // enpassant
+            if(Math.abs(row - preRow) == 2){
+                twoStepped = true;
+            }
+        }
+        x = getX(col);
+        y = getY(row);
+        preCol = getColumn(x);
+        preRow = getRow(y);
+        moved = true;
+    }
+    public void resetPosition(){
+        col = preCol;
+        row = preRow;
+        x = getX(col);
+        y = getY(row);
+    }
+    public boolean movePossible(int targetCol, int targetRow){
+        return false;
+    }
+    public boolean isWithinBoard(int targetCol, int targetRow){
+        return targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7;
+    }
+    public boolean isSameSquare(int targetCol, int targetRow){
+        return targetCol == preCol && targetRow == preRow;
+    }
+    public Piece getHittingPiece(int targetCol, int targetRow){
+        for(Piece piece : ChessGamePanel.temporaryPieces){
+            if(piece.col == targetCol && piece.row == targetRow && piece != this){
+                return piece;
+            }
+        }
+        return null;
+    }
+    public boolean isValidPlace(int targetCol, int targetRow){
+        hittingPiece = getHittingPiece(targetCol, targetRow);
+        if(hittingPiece == null){
+            return true;
+        }else{
+            if(hittingPiece.color != this.color){
+                return true;
+            }
+            else {
+                hittingPiece = null;
+            }
+        }
+        return false;
+    }
+    public boolean onStraightLine(int targetCol, int targetRow) {
+        int colStep = Integer.compare(targetCol, preCol);
+        int rowStep = Integer.compare(targetRow, preRow);
+        int col = preCol + colStep;
+        int row = preRow + rowStep;
+        while (col != targetCol || row != targetRow) {
+            for (Piece piece : ChessGamePanel.temporaryPieces) {
+                if (piece.col == col && piece.row == row) {
+                    hittingPiece = piece;
+                    return true;
                 }
-            } else {
-                diagOccup.add(board[yNW][xNW]);
-                yNW--;
-                xNW--;
+            }
+            if (col != targetCol) {
+                col += colStep;
+            }
+            if (row != targetRow) {
+                row += rowStep;
             }
         }
 
-        while (xSW >= 0 && ySW < 8) {
-            if (board[ySW][xSW].isOccupied()) {
-                if (board[ySW][xSW].getOccupyingPiece().getColor() == this.color) {
-                    break;
-                } else {
-                    diagOccup.add(board[ySW][xSW]);
-                    break;
+        return false;
+    }
+    public boolean OnDiagonal(int targetCol, int targetRow) {
+        int colStep = (targetCol > preCol) ? 1 : -1; // column direction
+        int rowStep = (targetRow > preRow) ? 1 : -1; // row direction
+
+        int col = preCol + colStep;
+        int row = preRow + rowStep;
+
+        while (col != targetCol && row != targetRow) {
+            for (Piece piece : ChessGamePanel.temporaryPieces) {
+                if (piece.col == col && piece.row == row) {
+                    hittingPiece = piece;
+                    return true;
                 }
-            } else {
-                diagOccup.add(board[ySW][xSW]);
-                ySW++;
-                xSW--;
             }
+            col += colStep;
+            row += rowStep;
         }
 
-        while (xSE < 8 && ySE < 8) {
-            if (board[ySE][xSE].isOccupied()) {
-                if (board[ySE][xSE].getOccupyingPiece().getColor() == this.color) {
-                    break;
-                } else {
-                    diagOccup.add(board[ySE][xSE]);
-                    break;
-                }
-            } else {
-                diagOccup.add(board[ySE][xSE]);
-                ySE++;
-                xSE++;
-            }
-        }
-
-        while (xNE < 8 && yNE >= 0) {
-            if (board[yNE][xNE].isOccupied()) {
-                if (board[yNE][xNE].getOccupyingPiece().getColor() == this.color) {
-                    break;
-                } else {
-                    diagOccup.add(board[yNE][xNE]);
-                    break;
-                }
-            } else {
-                diagOccup.add(board[yNE][xNE]);
-                yNE--;
-                xNE++;
-            }
-        }
-
-        return diagOccup;
+        return false;
+    }
+    public void draw(Graphics2D g2){
+        g2.drawImage(image, x,y, ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE, null);
     }
 
-    // No implementation, to be implemented by each subclass
-    public abstract List<Square> getLegalMoves(Board b);
 }

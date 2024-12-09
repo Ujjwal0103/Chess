@@ -1,37 +1,38 @@
 package org.cis1200.chess;
 
-import java.util.LinkedList;
-import java.util.List;
+public class Queen extends Piece{
 
-public class Queen extends Piece {
-
-    public Queen(int color, Square initSq, String img_file) {
-        super(color, initSq, img_file);
+    public Queen(int color, int col, int row) {
+        super(color, col, row);
+        type = Type.QUEEN;
+        if(color == ChessGamePanel.PLAYER_WHITE){
+            image = getImage("/piece/white-queen");
+        }else{
+            image = getImage("/piece/black-queen");
+        }
     }
 
-    @Override
-    public List<Square> getLegalMoves(Board b) {
-        LinkedList<Square> legalMoves = new LinkedList<Square>();
-        Square[][] board = b.getSquareArray();
-
-        int x = this.getPosition().getXNum();
-        int y = this.getPosition().getYNum();
-
-        int[] occups = getLinearOccupations(board, x, y);
-
-        for (int i = occups[0]; i <= occups[1]; i++) {
-            if (i != y) legalMoves.add(board[i][x]);
+    public boolean movePossible(int targetCol, int targetRow) {
+        // Validate that it is within the board
+        if (!isWithinBoard(targetCol, targetRow) || isSameSquare(targetCol, targetRow)) {
+            return false;
+        }
+        // straight line moves
+        boolean isStraightMove = (targetCol == preCol || targetRow == preRow);
+        if (isStraightMove) {
+            if (isValidPlace(targetCol, targetRow) && !onStraightLine(targetCol, targetRow)) {
+                return true;
+            }
         }
 
-        for (int i = occups[2]; i <= occups[3]; i++) {
-            if (i != x) legalMoves.add(board[y][i]);
+        // diagonal moves
+        boolean isDiagonalMove = Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow);
+        if (isDiagonalMove) {
+            if (isValidPlace(targetCol, targetRow) && !OnDiagonal(targetCol, targetRow)) {
+                return true;
+            }
         }
-
-        List<Square> bMoves = getDiagonalOccupations(board, x, y);
-
-        legalMoves.addAll(bMoves);
-
-        return legalMoves;
+        return false;
     }
 
 }

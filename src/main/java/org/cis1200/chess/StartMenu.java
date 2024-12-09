@@ -1,156 +1,62 @@
 package org.cis1200.chess;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 public class StartMenu implements Runnable {
+    @Override
     public void run() {
-        final JFrame startWindow = new JFrame("Chess");
-        // Set window properties
-        startWindow.setLocation(300,100);
-        startWindow.setResizable(false);
-        startWindow.setSize(260, 240);
+        JFrame frame = new JFrame("Welcome to Chess by Ujjwal Rastogi");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setSize(600, 400);
+        frame.setLayout(new BorderLayout());
 
-        Box components = Box.createVerticalBox();
-        startWindow.add(components);
+        JLabel titleLabel = new JLabel("Ujjwal Rastogi's Final Chess Project", JLabel.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 32));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
-        // Game title
-        final JPanel titlePanel = new JPanel();
-        components.add(titlePanel);
-        final JLabel titleLabel = new JLabel("Chess");
-        titlePanel.add(titleLabel);
+        JTextArea description = new JTextArea(
+                "Welcome to this untimed Chess game! \n"
+                        + "All standard functionality has been implemented, including moves, captures, and special rules. \n"
+                        + "You just have to drag and drop pieces using your " +
+                        "cursor in order to play the game" +
+                        " \n" +
+                        "Enjoy your game, and challenge your friends or hone your skills."
+        );
+        description.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        description.setEditable(false);
+        description.setFocusable(false);
+        description.setOpaque(false);
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // Black player selections
-        final JPanel blackPanel = new JPanel();
-        components.add(blackPanel, BorderLayout.EAST);
-        final JLabel blackPiece = new JLabel();
-        try {
-            Image blackImg = ImageIO.read(new File("bp.png"));
-            blackPiece.setIcon(new ImageIcon(blackImg));
-            blackPanel.add(blackPiece);
-        } catch (Exception e) {
-            System.out.println("Required game file bp.png missing");
-        }
-
-
-
-        final JTextField blackInput = new JTextField("Black", 10);
-        blackPanel.add(blackInput);
-
-        // White player selections
-        final JPanel whitePanel = new JPanel();
-        components.add(whitePanel);
-        final JLabel whitePiece = new JLabel();
-
-        try {
-            Image whiteImg = ImageIO.read(new File("wp.png"));
-            whitePiece.setIcon(new ImageIcon(whiteImg));
-            whitePanel.add(whitePiece);
-            startWindow.setIconImage(whiteImg);
-        }  catch (Exception e) {
-            System.out.println("Required game file wp.png missing");
-        }
-
-
-        final JTextField whiteInput = new JTextField("White", 10);
-        whitePanel.add(whiteInput);
-
-        // Timer settings
-        final String[] minSecInts = new String[60];
-        for (int i = 0; i < 60; i++) {
-            if (i < 10) {
-                minSecInts[i] = "0" + Integer.toString(i);
-            } else {
-                minSecInts[i] = Integer.toString(i);
-            }
-        }
-
-        final JComboBox<String> seconds = new JComboBox<String>(minSecInts);
-        final JComboBox<String> minutes = new JComboBox<String>(minSecInts);
-        final JComboBox<String> hours =
-                new JComboBox<String>(new String[] {"0","1","2","3"});
-
-        Box timerSettings = Box.createHorizontalBox();
-
-        hours.setMaximumSize(hours.getPreferredSize());
-        minutes.setMaximumSize(minutes.getPreferredSize());
-        seconds.setMaximumSize(minutes.getPreferredSize());
-
-        timerSettings.add(hours);
-        timerSettings.add(Box.createHorizontalStrut(10));
-        timerSettings.add(seconds);
-        timerSettings.add(Box.createHorizontalStrut(10));
-        timerSettings.add(minutes);
-
-        timerSettings.add(Box.createVerticalGlue());
-
-        components.add(timerSettings);
-
-        // Buttons
-        Box buttons = Box.createHorizontalBox();
-        final JButton quit = new JButton("Quit");
-
-        quit.addActionListener(new ActionListener() {
+        JButton startButton = new JButton("Start Game");
+        startButton.setFont(new Font("SansSerif", Font.BOLD, 20));
+        startButton.setFocusPainted(false);
+        startButton.setForeground(Color.BLACK);
+        startButton.setPreferredSize(new Dimension(200, 50));
+        startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                startWindow.dispose();
+                frame.dispose();
+                SwingUtilities.invokeLater(new RunChess());
             }
         });
 
-        final JButton instr = new JButton("Instructions");
-
-        instr.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(startWindow,
-                        "To begin a new game, input player names\n" +
-                                "next to the pieces. Set the clocks and\n" +
-                                "click \"Start\". Setting the timer to all\n" +
-                                "zeroes begins a new untimed game.",
-                        "How to play",
-                        JOptionPane.PLAIN_MESSAGE);
-            }
-        });
-
-        final JButton start = new JButton("Start");
-
-        start.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String bn = blackInput.getText();
-                String wn = whiteInput.getText();
-                int hh = Integer.parseInt((String) hours.getSelectedItem());
-                int mm = Integer.parseInt((String) minutes.getSelectedItem());
-                int ss = Integer.parseInt((String) seconds.getSelectedItem());
-
-                new GameWindow(bn, wn, hh, mm, ss);
-                startWindow.dispose();
-            }
-        });
-
-        buttons.add(start);
-        buttons.add(Box.createHorizontalStrut(10));
-        buttons.add(instr);
-        buttons.add(Box.createHorizontalStrut(10));
-        buttons.add(quit);
-        components.add(buttons);
-
-        Component space = Box.createGlue();
-        components.add(space);
-
-        startWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        startWindow.setVisible(true);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        centerPanel.add(description);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        centerPanel.add(startButton);
+        frame.add(titleLabel, BorderLayout.NORTH);
+        frame.add(centerPanel, BorderLayout.CENTER);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 }

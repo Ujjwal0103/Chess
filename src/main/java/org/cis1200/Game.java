@@ -10,7 +10,7 @@ public class Game {
      */
     public static void main(String[] args) {
         // Set the game you want to run here
-        Runnable startMenu = new org.cis1200.chesss.StartMenu();
+        Runnable startMenu = new org.cis1200.chess.StartMenu();
 
         SwingUtilities.invokeLater(startMenu);
     }

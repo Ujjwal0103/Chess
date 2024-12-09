@@ -1,84 +1,54 @@
 package org.cis1200.chess;
 
-import java.util.List;
-import java.util.LinkedList;
+public class Pawn extends Piece{
 
-public class Pawn extends Piece {
-    private boolean wasMoved;
-
-    public Pawn(int color, Square initSq, String img_file) {
-        super(color, initSq, img_file);
+    public Pawn(int color, int col, int row) {
+        super(color, col, row);
+        type = Type.PAWN;
+        if(color == ChessGamePanel.PLAYER_WHITE){
+            image = getImage("/piece/white-pawn");
+        }else{
+            image = getImage("/piece/black-pawn");
+        }
     }
+    public boolean movePossible(int targetCol, int targetRow) {
+        if (!isWithinBoard(targetCol, targetRow) || isSameSquare(targetCol, targetRow)) {
+            return false;
+        }
 
-    @Override
-    public boolean move(Square fin) {
-        boolean b = super.move(fin);
-        wasMoved = true;
-        return b;
-    }
+        int moveDirection = (color == ChessGamePanel.PLAYER_WHITE) ? -1 : 1;
+        hittingPiece = getHittingPiece(targetCol, targetRow);
 
-    @Override
-    public List<Square> getLegalMoves(Board b) {
-        LinkedList<Square> legalMoves = new LinkedList<Square>();
+        // Single step move
+        boolean isSingleStepMove = (targetCol == preCol && targetRow == preRow + moveDirection && hittingPiece == null);
+        if (isSingleStepMove) {
+            return true; // 1
+        }
 
-        Square[][] board = b.getSquareArray();
+        // Double step move
+        boolean isDoubleStepMove = (targetCol == preCol && targetRow == preRow + moveDirection * 2 && hittingPiece == null && !moved && !onStraightLine(targetCol, targetRow));
+        if (isDoubleStepMove) {
+            return true; // 2
+        }
 
-        int x = this.getPosition().getXNum();
-        int y = this.getPosition().getYNum();
-        int c = this.getColor();
+        // Diagonal capture
+        boolean isDiagonalCapture = (Math.abs(targetCol - preCol) == 1 && targetRow == preRow + moveDirection && hittingPiece != null && hittingPiece.color != color);
+        if (isDiagonalCapture) {
+            return true;
+        }
 
-        if (c == 0) {
-            if (!wasMoved) {
-                if (!board[y+2][x].isOccupied()) {
-                    legalMoves.add(board[y+2][x]);
-                }
-            }
-
-            if (y+1 < 8) {
-                if (!board[y+1][x].isOccupied()) {
-                    legalMoves.add(board[y+1][x]);
-                }
-            }
-
-            if (x+1 < 8 && y+1 < 8) {
-                if (board[y+1][x+1].isOccupied()) {
-                    legalMoves.add(board[y+1][x+1]);
-                }
-            }
-
-            if (x-1 >= 0 && y+1 < 8) {
-                if (board[y+1][x-1].isOccupied()) {
-                    legalMoves.add(board[y+1][x-1]);
+        // En passant
+        boolean isEnPassant = (Math.abs(targetCol - preCol) == 1 && targetRow == preRow + moveDirection);
+        if (isEnPassant) {
+            for (Piece piece : ChessGamePanel.temporaryPieces) {
+                if (piece.col == targetCol && piece.row == preRow && piece.twoStepped) {
+                    hittingPiece = piece;
+                    return true;
                 }
             }
         }
 
-        if (c == 1) {
-            if (!wasMoved) {
-                if (!board[y-2][x].isOccupied()) {
-                    legalMoves.add(board[y-2][x]);
-                }
-            }
-
-            if (y-1 >= 0) {
-                if (!board[y-1][x].isOccupied()) {
-                    legalMoves.add(board[y-1][x]);
-                }
-            }
-
-            if (x+1 < 8 && y-1 >= 0) {
-                if (board[y-1][x+1].isOccupied()) {
-                    legalMoves.add(board[y-1][x+1]);
-                }
-            }
-
-            if (x-1 >= 0 && y-1 >= 0) {
-                if (board[y-1][x-1].isOccupied()) {
-                    legalMoves.add(board[y-1][x-1]);
-                }
-            }
-        }
-
-        return legalMoves;
+        return false;
     }
+
 }
