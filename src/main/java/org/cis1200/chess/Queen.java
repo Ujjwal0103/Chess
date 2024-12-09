@@ -1,13 +1,13 @@
 package org.cis1200.chess;
 
-public class Queen extends Piece{
+public class Queen extends Piece {
 
     public Queen(int color, int col, int row) {
         super(color, col, row);
         type = Type.QUEEN;
-        if(color == ChessGamePanel.PLAYER_WHITE){
+        if (color == ChessGamePanel.PLAYER_WHITE) {
             image = getImage("/piece/white-queen");
-        }else{
+        } else {
             image = getImage("/piece/black-queen");
         }
     }

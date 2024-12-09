@@ -1,16 +1,17 @@
 package org.cis1200.chess;
 
-public class Rook extends Piece{
+public class Rook extends Piece {
 
     public Rook(int color, int col, int row) {
         super(color, col, row);
         type = Type.ROOK;
-        if(color == ChessGamePanel.PLAYER_WHITE){
+        if (color == ChessGamePanel.PLAYER_WHITE) {
             image = getImage("/piece/white-rook");
-        }else{
+        } else {
             image = getImage("/piece/black-rook");
         }
     }
+
     public boolean movePossible(int targetCol, int targetRow) {
         if (!isWithinBoard(targetCol, targetRow) || isSameSquare(targetCol, targetRow)) {
             return false;

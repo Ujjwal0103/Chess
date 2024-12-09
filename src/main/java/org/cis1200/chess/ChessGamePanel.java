@@ -41,8 +41,8 @@ public class ChessGamePanel extends JPanel implements Runnable {
     }
 
     public void initialisePieces() {
-        int[][] pawnRows = {{6, PLAYER_WHITE}, {1, PLAYER_BLACK}};
-        int[][] majorPieceRows = {{7, PLAYER_WHITE}, {0, PLAYER_BLACK}};
+        int[][] pawnRows = { { 6, PLAYER_WHITE }, { 1, PLAYER_BLACK } };
+        int[][] majorPieceRows = { { 7, PLAYER_WHITE }, { 0, PLAYER_BLACK } };
 
         for (int[] pawnRow : pawnRows) {
             int row = pawnRow[0];
@@ -67,8 +67,10 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
     }
 
-    protected void clonePieces(LinkedList<Piece> source,
-                            LinkedList<Piece> target) {
+    protected void clonePieces(
+            LinkedList<Piece> source,
+            LinkedList<Piece> target
+    ) {
         target.clear();
         for (Piece piece : source) {
             target.add(piece);
@@ -95,7 +97,8 @@ public class ChessGamePanel extends JPanel implements Runnable {
 
     private void selectActivePiece() {
         for (Piece piece : temporaryPieces) {
-            if (piece.color == currentColor && piece.col == mouseHandler.x / ChessBoard.SQUARE_SIZE && piece.row == mouseHandler.y / ChessBoard.SQUARE_SIZE) {
+            if (piece.color == currentColor && piece.col == mouseHandler.x / ChessBoard.SQUARE_SIZE
+                    && piece.row == mouseHandler.y / ChessBoard.SQUARE_SIZE) {
                 activePiece = piece;
                 break;
             }
@@ -110,8 +113,9 @@ public class ChessGamePanel extends JPanel implements Runnable {
             resetPiecePosition();
         }
     }
+
     private void updatePiecesAfterMove() {
-        clonePieces(temporaryPieces, activePieces);  // Copy simulated pieces back to main list
+        clonePieces(temporaryPieces, activePieces);
         activePiece.updatePosition();
         if (castlingPiece != null) {
             castlingPiece.updatePosition();
@@ -137,6 +141,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
         activePiece.resetPosition();
         activePiece = null;
     }
+
     public void simulate() {
         moveAllowed = false;
         validMoveTarget = false;
@@ -169,11 +174,13 @@ public class ChessGamePanel extends JPanel implements Runnable {
         activePiece.col = activePiece.getColumn(activePiece.x);
         activePiece.row = activePiece.getRow(activePiece.y);
     }
+
     private void handlePieceCapture() {
         if (activePiece.hittingPiece != null) {
             temporaryPieces.remove(activePiece.hittingPiece.getIndex());
         }
     }
+
     protected void switchPlayer() {
         currentColor = (currentColor == PLAYER_WHITE) ? PLAYER_BLACK : PLAYER_WHITE;
         for (Piece piece : activePieces) {
@@ -184,49 +191,54 @@ public class ChessGamePanel extends JPanel implements Runnable {
         activePiece = null;
     }
 
-    private boolean isIllegal(Piece king){
-        if(king.type == Type.KING){
-            for(Piece piece : temporaryPieces){
-                if(piece != king && piece.color != king.color && piece.movePossible(king.col, king.row)){
+    private boolean isIllegal(Piece king) {
+        if (king.type == Type.KING) {
+            for (Piece piece : temporaryPieces) {
+                if (piece != king && piece.color != king.color
+                        && piece.movePossible(king.col, king.row)) {
                     return true;
                 }
             }
         }
         return false;
     }
-    public boolean opponentCanCaptureKing(){
+
+    public boolean opponentCanCaptureKing() {
         Piece king = getKing(false);
-        for(Piece piece : temporaryPieces){
-            if(piece.color != king.color && piece.movePossible(king.col, king.row)){
+        for (Piece piece : temporaryPieces) {
+            if (piece.color != king.color && piece.movePossible(king.col, king.row)) {
                 return true;
             }
         }
         return false;
     }
-    public void validateCastling(){
-        if(castlingPiece != null){
-            if(castlingPiece.col == 0){
+
+    public void validateCastling() {
+        if (castlingPiece != null) {
+            if (castlingPiece.col == 0) {
                 castlingPiece.col += 3;
-            }else if(castlingPiece.col == 7){
+            } else if (castlingPiece.col == 7) {
                 castlingPiece.col -= 2;
             }
             castlingPiece.x = castlingPiece.getX(castlingPiece.col);
         }
     }
-    private boolean isStaleMate(){
+
+    private boolean isStaleMate() {
         int count = 0;
-        for(Piece piece : temporaryPieces){
-            if(piece.color != currentColor){
+        for (Piece piece : temporaryPieces) {
+            if (piece.color != currentColor) {
                 count++;
             }
         }
-        if(count == 1){ //only one king
-            if(!canKingMove(getKing(true))){
+        if (count == 1) { // only one king
+            if (!canKingMove(getKing(true))) {
                 return true;
             }
         }
         return false;
     }
+
     boolean isKingInCheck() {
         Piece king = getKing(true);
         for (Piece piece : temporaryPieces) {
@@ -248,88 +260,97 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
         return null;
     }
-    private boolean isCheckmate(){
+
+    private boolean isCheckmate() {
         Piece king = getKing(true);
-        if(canKingMove(king)){
+        if (canKingMove(king)) {
             return false;
-        }else{ //chance
+        } else {
             int colDiff = Math.abs(checkingPiece.col - king.col);
             int rowDiff = Math.abs(checkingPiece.row - king.row);
 
-            if (colDiff == 0) { //vertically
-                if(checkingPiece.row < king.row){
-                    for(int row = checkingPiece.row; row < king.row; row++){
-                        for(Piece piece: temporaryPieces){
-                            if(piece != king && piece.color != currentColor && piece.movePossible(checkingPiece.col, row)){
+            if (colDiff == 0) { // vertically
+                if (checkingPiece.row < king.row) {
+                    for (int row = checkingPiece.row; row < king.row; row++) {
+                        for (Piece piece : temporaryPieces) {
+                            if (piece != king && piece.color != currentColor
+                                    && piece.movePossible(checkingPiece.col, row)) {
                                 return false;
                             }
                         }
                     }
                 }
-                if(checkingPiece.row > king.row){
-                    for(int row = checkingPiece.row; row > king.row; row--){
-                        for(Piece piece: temporaryPieces){
-                            if(piece != king && piece.color != currentColor && piece.movePossible(checkingPiece.col, row)){
+                if (checkingPiece.row > king.row) {
+                    for (int row = checkingPiece.row; row > king.row; row--) {
+                        for (Piece piece : temporaryPieces) {
+                            if (piece != king && piece.color != currentColor
+                                    && piece.movePossible(checkingPiece.col, row)) {
                                 return false;
                             }
                         }
                     }
                 }
-            }else if(rowDiff == 0){ // horizontally
-                if(checkingPiece.col > king.col){
-                    for(int col = checkingPiece.col; col < king.row; col++){
-                        for(Piece piece: temporaryPieces){
-                            if(piece != king && piece.color != currentColor && piece.movePossible(col, checkingPiece.row)){
+            } else if (rowDiff == 0) { // horizontally
+                if (checkingPiece.col > king.col) {
+                    for (int col = checkingPiece.col; col < king.row; col++) {
+                        for (Piece piece : temporaryPieces) {
+                            if (piece != king && piece.color != currentColor
+                                    && piece.movePossible(col, checkingPiece.row)) {
                                 return false;
                             }
                         }
                     }
                 }
-                if(checkingPiece.col < king.col){
-                    for(int col = checkingPiece.col; col > king.row; col--){
-                        for(Piece piece: temporaryPieces){
-                            if(piece != king && piece.color != currentColor && piece.movePossible(col, checkingPiece.row)){
+                if (checkingPiece.col < king.col) {
+                    for (int col = checkingPiece.col; col > king.row; col--) {
+                        for (Piece piece : temporaryPieces) {
+                            if (piece != king && piece.color != currentColor
+                                    && piece.movePossible(col, checkingPiece.row)) {
                                 return false;
                             }
                         }
                     }
                 }
-            }else if(colDiff == rowDiff){ // diagonally
-                if(checkingPiece.row < king.row){ //above king
-                    if(checkingPiece.col < king.col){ // upper left
-                        for(int col = checkingPiece.col, row = checkingPiece.row; col < king.row; col++, row++){
-                            for(Piece piece: temporaryPieces){
-                                if(piece != king && piece.color != currentColor && piece.movePossible(col, row)){
-                                    return false ;
+            } else if (colDiff == rowDiff) { // diagonally
+                if (checkingPiece.row < king.row) { // above king
+                    if (checkingPiece.col < king.col) { // upper left
+                        for (int col = checkingPiece.col, row = checkingPiece.row; col < king.row; col++, row++) {
+                            for (Piece piece : temporaryPieces) {
+                                if (piece != king && piece.color != currentColor
+                                        && piece.movePossible(col, row)) {
+                                    return false;
                                 }
                             }
                         }
                     }
-                    if(checkingPiece.col > king.col){ // upper right
-                        for(int col = checkingPiece.col, row = checkingPiece.row; col > king.row; col--, row++){
-                            for(Piece piece: temporaryPieces){
-                                if(piece != king && piece.color != currentColor && piece.movePossible(col, row)){
-                                    return false ;
+                    if (checkingPiece.col > king.col) { // upper right
+                        for (int col = checkingPiece.col, row = checkingPiece.row; col > king.row; col--, row++) {
+                            for (Piece piece : temporaryPieces) {
+                                if (piece != king && piece.color != currentColor
+                                        && piece.movePossible(col, row)) {
+                                    return false;
                                 }
                             }
                         }
                     }
                 }
-                if(checkingPiece.row > king.row){ //below king
-                    if(checkingPiece.col < king.col){ // lower left
-                        for(int col = checkingPiece.col, row = checkingPiece.row; col < king.row; col++, row--){
-                            for(Piece piece: temporaryPieces){
-                                if(piece != king && piece.color != currentColor && piece.movePossible(col, row)){
-                                    return false ;
+                if (checkingPiece.row > king.row) { // below king
+                    if (checkingPiece.col < king.col) { // lower left
+                        for (int col = checkingPiece.col, row = checkingPiece.row; col < king.row; col++, row--) {
+                            for (Piece piece : temporaryPieces) {
+                                if (piece != king && piece.color != currentColor
+                                        && piece.movePossible(col, row)) {
+                                    return false;
                                 }
                             }
                         }
                     }
-                    if(checkingPiece.col > king.col){//lower right
-                        for(int col = checkingPiece.col, row = checkingPiece.row; col > king.row; col--, row--){
-                            for(Piece piece: temporaryPieces){
-                                if(piece != king && piece.color != currentColor && piece.movePossible(col, row)){
-                                    return false ;
+                    if (checkingPiece.col > king.col) {// lower right
+                        for (int col = checkingPiece.col, row = checkingPiece.row; col > king.row; col--, row--) {
+                            for (Piece piece : temporaryPieces) {
+                                if (piece != king && piece.color != currentColor
+                                        && piece.movePossible(col, row)) {
+                                    return false;
                                 }
                             }
                         }
@@ -339,12 +360,13 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
         return true;
     }
+
     private boolean canKingMove(Piece king) {
-        //all places king can move
+        // all places king can move
         int[][] directions = {
-                {-1, -1}, {0, -1}, {1, -1},
-                {-1,  0},          {1,  0},
-                {-1,  1}, {0,  1}, {1,  1}
+            { -1, -1 }, { 0, -1 }, { 1, -1 },
+            { -1, 0 }, { 1, 0 },
+            { -1, 1 }, { 0, 1 }, { 1, 1 }
         };
         for (int[] direction : directions) {
             if (isValidMove(king, direction[0], direction[1])) {
@@ -353,6 +375,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
         return false;
     }
+
     private boolean isValidMove(Piece king, int colOffset, int rowOffset) {
         boolean isValid = false;
         king.col += colOffset;
@@ -369,11 +392,13 @@ public class ChessGamePanel extends JPanel implements Runnable {
         clonePieces(activePieces, temporaryPieces);
         return isValid;
     }
-    boolean canPromote(){
-        if(activePiece.type == Type.PAWN){
-            if(currentColor == PLAYER_WHITE && activePiece.row == 0 || currentColor == PLAYER_BLACK && activePiece.row == 7){
+
+    boolean canPromote() {
+        if (activePiece.type == Type.PAWN) {
+            if (currentColor == PLAYER_WHITE && activePiece.row == 0
+                    || currentColor == PLAYER_BLACK && activePiece.row == 7) {
                 promotionOptions.clear();
-                promotionOptions.add(new Rook(currentColor, 9,2 ));
+                promotionOptions.add(new Rook(currentColor, 9, 2));
                 promotionOptions.add(new Knight(currentColor, 9, 3));
                 promotionOptions.add(new Bishop(currentColor, 9, 4));
                 promotionOptions.add(new Queen(currentColor, 9, 5));
@@ -382,6 +407,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
         return false;
     }
+
     public void promoting() {
         if (mouseHandler.pressed) {
             Piece selectedPiece = getSelectedPromoPiece();
@@ -394,7 +420,8 @@ public class ChessGamePanel extends JPanel implements Runnable {
 
     private Piece getSelectedPromoPiece() {
         for (Piece piece : promotionOptions) {
-            if (piece.col == mouseHandler.x / ChessBoard.SQUARE_SIZE && piece.row == mouseHandler.y / ChessBoard.SQUARE_SIZE) {
+            if (piece.col == mouseHandler.x / ChessBoard.SQUARE_SIZE
+                    && piece.row == mouseHandler.y / ChessBoard.SQUARE_SIZE) {
                 return piece;
             }
         }
@@ -434,6 +461,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
         promotion = false;
         switchPlayer();
     }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -452,8 +480,11 @@ public class ChessGamePanel extends JPanel implements Runnable {
                     g2.setColor(Color.WHITE);
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
                 }
-                g2.fillRect(activePiece.col * ChessBoard.SQUARE_SIZE,
-                        activePiece.row * ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE);
+                g2.fillRect(
+                        activePiece.col * ChessBoard.SQUARE_SIZE,
+                        activePiece.row * ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE,
+                        ChessBoard.SQUARE_SIZE
+                );
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
             }
             activePiece.draw(g2);
@@ -469,7 +500,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
         g2.drawString("Game Status", 830, 50);
 
         g2.setFont(new Font("Book Antiqua", Font.PLAIN, 20));
-        int messageY = 100; // Starting Y-coordinate for messages
+        int messageY = 100;
         int lineSpacing = 30;
 
         if (promotion) {
@@ -478,8 +509,10 @@ public class ChessGamePanel extends JPanel implements Runnable {
             messageY += lineSpacing + 10;
 
             for (Piece piece : promotionOptions) {
-                g2.drawImage(piece.image, piece.getX(piece.col),
-                        piece.getY(piece.row), ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE, null);
+                g2.drawImage(
+                        piece.image, piece.getX(piece.col),
+                        piece.getY(piece.row), ChessBoard.SQUARE_SIZE, ChessBoard.SQUARE_SIZE, null
+                );
             }
         } else {
             g2.setColor(Color.WHITE);
@@ -506,7 +539,9 @@ public class ChessGamePanel extends JPanel implements Runnable {
         if (gameOver) {
             g2.setFont(new Font("Book Antiqua", Font.BOLD, 30));
             g2.setColor(Color.PINK);
-            g2.drawString(currentColor == PLAYER_WHITE ? "White Wins" : "Black Wins", 830, messageY);
+            g2.drawString(
+                    currentColor == PLAYER_WHITE ? "White Wins" : "Black Wins", 830, messageY
+            );
             messageY += lineSpacing;
         } else if (staleMate) {
             g2.setFont(new Font("Book Antiqua", Font.BOLD, 30));
@@ -516,21 +551,19 @@ public class ChessGamePanel extends JPanel implements Runnable {
         }
     }
 
-
-
     @Override
     public void run() {
-        double drawInterval = 1000000000/FPS;
+        double drawInterval = 1000000000 / FPS;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
 
-        while(gameThread != null){
+        while (gameThread != null) {
             currentTime = System.nanoTime();
-            delta += (currentTime - lastTime)/drawInterval;
+            delta += (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
 
-            if(delta >= 1){
+            if (delta >= 1) {
                 refreshGameState();
                 repaint();
                 delta--;

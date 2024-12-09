@@ -12,18 +12,21 @@ public class MouseHandler extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         pressed = true;
     }
-     @Override
+
+    @Override
     public void mouseReleased(MouseEvent e) {
         pressed = false;
-     }
-     @Override
+    }
+
+    @Override
     public void mouseDragged(MouseEvent e) {
         x = e.getX();
         y = e.getY();
-     }
-     @Override
+    }
+
+    @Override
     public void mouseMoved(MouseEvent e) {
         x = e.getX();
         y = e.getY();
-     }
+    }
 }

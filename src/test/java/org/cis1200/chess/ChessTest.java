@@ -1,4 +1,5 @@
 package org.cis1200.chess;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,12 +8,20 @@ public class ChessTest {
     @Test
     void testSwitchPlayer() {
         ChessGamePanel panel = new ChessGamePanel();
-        assertEquals(ChessGamePanel.PLAYER_WHITE, panel.currentColor, "Initial player should be white.");
+        assertEquals(
+                ChessGamePanel.PLAYER_WHITE, panel.currentColor, "Initial player should be white."
+        );
         panel.switchPlayer();
-        assertEquals(ChessGamePanel.PLAYER_BLACK, panel.currentColor, "Player should switch to black.");
+        assertEquals(
+                ChessGamePanel.PLAYER_BLACK, panel.currentColor, "Player should switch to black."
+        );
         panel.switchPlayer();
-        assertEquals(ChessGamePanel.PLAYER_WHITE, panel.currentColor, "Player should switch back to white.");
+        assertEquals(
+                ChessGamePanel.PLAYER_WHITE, panel.currentColor,
+                "Player should switch back to white."
+        );
     }
+
     @Test
     void testPromotionEligibility() {
         ChessGamePanel panel = new ChessGamePanel();
@@ -30,6 +39,7 @@ public class ChessTest {
         panel.currentColor = ChessGamePanel.PLAYER_BLACK;
         assertTrue(panel.canPromote(), "Black pawn should be eligible for promotion.");
     }
+
     @Test
     void testGameOver() {
         ChessGamePanel panel = new ChessGamePanel();
@@ -47,6 +57,5 @@ public class ChessTest {
         panel.checkGameEndConditions();
         assertTrue(panel.gameOver, "Game should be over due to checkmate.");
     }
-
 
 }

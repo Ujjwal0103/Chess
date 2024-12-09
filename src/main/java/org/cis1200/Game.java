@@ -15,5 +15,3 @@ public class Game {
         SwingUtilities.invokeLater(startMenu);
     }
 }
-
-
