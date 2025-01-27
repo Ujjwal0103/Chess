@@ -20,7 +20,8 @@ public class StartMenu implements Runnable {
 
         JTextArea description = new JTextArea(
                 "Welcome to this untimed Chess game! \n"
-                        + "All standard functionality has been implemented, including moves, captures, and special rules. \n"
+                        + "All standard functionality has been implemented, " +
+                        "including moves, captures, and special rules. \n"
                         + "You just have to drag and drop pieces using your " +
                         "cursor in order to play the game" +
                         " \n" +

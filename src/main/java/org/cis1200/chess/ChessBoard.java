@@ -3,17 +3,17 @@ package org.cis1200.chess;
 import java.awt.*;
 
 public class ChessBoard {
-    final int MAX_COL = 8;
-    final int MAX_ROW = 8;
+    final int maxCol = 8;
+    final int maxRow = 8;
     public static final int SQUARE_SIZE = 100;
     public static final int HALF_SQUARE_SIZE = SQUARE_SIZE / 2;
 
-    private final Color[][] boardColors = new Color[MAX_ROW][MAX_COL];
+    private final Color[][] boardColors = new Color[maxRow][maxCol];
 
     public ChessBoard() {
         boolean isLight = true;
-        for (int row = 0; row < MAX_ROW; row++) {
-            for (int col = 0; col < MAX_COL; col++) {
+        for (int row = 0; row < maxRow; row++) {
+            for (int col = 0; col < maxCol; col++) {
                 if (isLight) {
                     boardColors[row][col] = new Color(236, 240, 206);
                 } else {
@@ -26,8 +26,8 @@ public class ChessBoard {
     }
 
     public void draw(Graphics2D g2) {
-        for (int row = 0; row < MAX_ROW; row++) {
-            for (int col = 0; col < MAX_COL; col++) {
+        for (int row = 0; row < maxRow; row++) {
+            for (int col = 0; col < maxCol; col++) {
                 g2.setColor(boardColors[row][col]);
                 g2.fillRect(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
             }

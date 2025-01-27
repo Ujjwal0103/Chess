@@ -7,7 +7,6 @@ import java.util.LinkedList;
 public class ChessGamePanel extends JPanel implements Runnable {
     public static final int WIDTH = 1200;
     public static final int HEIGHT = 800;
-    final int FPS = 60;
     Thread gameThread;
     private ChessBoard chessBoard = new ChessBoard();
     MouseHandler mouseHandler = new MouseHandler();
@@ -72,9 +71,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
             LinkedList<Piece> target
     ) {
         target.clear();
-        for (Piece piece : source) {
-            target.add(piece);
-        }
+        target.addAll(source);
     }
 
     private void refreshGameState() {
@@ -232,9 +229,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
             }
         }
         if (count == 1) { // only one king
-            if (!canKingMove(getKing(true))) {
-                return true;
-            }
+            return !canKingMove(getKing(true));
         }
         return false;
     }
@@ -553,7 +548,7 @@ public class ChessGamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = 1000000000 / FPS;
+        double drawInterval = 1000000000 / 60;
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
